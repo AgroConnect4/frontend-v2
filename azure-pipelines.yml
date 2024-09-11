@@ -3,19 +3,40 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+name: 'Frontend React Build Artefato'
+
 trigger:
-- main
+  branches:
+    include:
+      - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+variables:
+  buildConfiguration: 'Release'
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+jobs: 
+  - job: BuildAndTest
+    displayName: 'Publicação do Artefato de React Front'
+
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '20.x'  # Versão do Node.js a ser usada. Ajuste conforme necessário.
+
+      - task: CmdLine@2
+        inputs:
+          script: 'npm install'
+        displayName: 'Instalação das Dependências'  # Adicionando displayName ao nível de steps
+
+      - task: CmdLine@2
+        inputs:
+          script: 'npm run build'
+        displayName: 'Gerando Artefato de Build'  # Adicionando displayName ao nível de steps
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Build.SourcesDirectory)/build'  # Diretório onde o build é gerado. Ajuste se necessário.
+          artifact: 'react'  # Nome do artefato.
+          publishLocation: 'pipeline'  # Local de publicação correto.
