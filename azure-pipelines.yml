@@ -13,12 +13,16 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '20.x'  # Certifique-se de que a versão do NodeJS é compatível
+
   - script: |
       npm install -g firebase-tools
     displayName: 'Instalar Firebase CLI'
+
   - script: |
+      cd $(Build.SourcesDirectory)
       npm install
     displayName: 'Instalar dependências'
+
   - script: |
       firebase deploy --token $(FIREBASE_TOKEN)
       echo "Token: $(FIREBASE_TOKEN)"
